@@ -31,7 +31,7 @@ interface Piece {
 }
 
 // all pieces will start from left to right, top to bottom
-const pieces = [
+const pieces: Piece[] = [
   // [][][]
   //   []
   {
@@ -109,10 +109,8 @@ function renderGameboard (): void {
   gameboard.forEach((row, y) => {
     row.forEach((cell, x) => {
       if (cell !== 0) {
-        ctx.beginPath()
         ctx.fillStyle = (cell as Piece).color
         ctx.fillRect(x * config.pieceWidth, y * config.pieceHeight, config.pieceWidth, config.pieceHeight)
-        ctx.closePath()
       }
     })
   })
@@ -122,7 +120,7 @@ let targetPiece: Piece
 let isDragging = false
 
 function generatePiece (): Piece {
-  const randomPiece = { ...pieces[Math.floor(Math.random() * pieces.length)] }
+  const randomPiece = JSON.parse(JSON.stringify(pieces[Math.floor(Math.random() * pieces.length)])) as Piece
   let randomX = Math.floor(Math.random() * (config.width - randomPiece.width))
   randomPiece.color = '#' + Math.floor(Math.random() * 16777215).toString(16)
 
@@ -136,17 +134,19 @@ function generatePiece (): Piece {
     gameboard[cordinate.y][cordinate.x + randomPiece.position.x] = randomPiece
   })
 
-  renderGameboard()
-  return randomPiece
+  return { ...randomPiece }
 }
 
 function initGame (): void {
   if (!isDragging) {
-    targetPiece = generatePiece()
+    targetPiece = { ...generatePiece() }
     isDragging = true
   }
   // now lets get the piece down until it hits the groand or another piece
   const nextPositions = targetPiece.coordinatesDrag.map((coordinate) => {
+    if ((targetPiece.position.y + targetPiece.height) >= config.height) {
+      return 1
+    }
     const nextPosition = gameboard[targetPiece.position.y + coordinate.y + 1][targetPiece.position.x + coordinate.x]
     return nextPosition
   })
@@ -160,15 +160,23 @@ function initGame (): void {
     })
 
     // then we recreate the piece below
+    if (targetPiece.position.y + 1 >= config.height) {
+      isDragging = false
+      return
+    }
+
     targetPiece.position.y += 1
     targetPiece.coordinates.forEach((coordinate) => {
       gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = targetPiece
     })
-
-    renderGameboard()
+    return
+  } else if (!isAvailableNextPosition && targetPiece.position.y === 0) {
+    window.location.reload()
   }
+  isDragging = false
 }
 
 setInterval(() => {
   initGame()
-}, 1000)
+  renderGameboard()
+}, 25)
