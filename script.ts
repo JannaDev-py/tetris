@@ -124,6 +124,10 @@ function generatePiece (): Piece {
   let randomX = Math.floor(Math.random() * (config.width - randomPiece.width))
   randomPiece.color = '#' + Math.floor(Math.random() * 16777215).toString(16)
 
+  if (!(/^#[0-9a-f]{6}$/i).test(randomPiece.color)) {
+    randomPiece.color = '#' + Math.floor(Math.random() * 16777215).toString(16)
+  }
+
   while (gameboard[0][randomX] !== 0) {
     randomX = Math.floor(Math.random() * (config.width - randomPiece.width))
   }
@@ -134,19 +138,17 @@ function generatePiece (): Piece {
     gameboard[cordinate.y][cordinate.x + randomPiece.position.x] = randomPiece
   })
 
-  return { ...randomPiece }
+  return randomPiece
 }
 
 function initGame (): void {
   if (!isDragging) {
-    targetPiece = { ...generatePiece() }
+    targetPiece = generatePiece()
     isDragging = true
   }
   // now lets get the piece down until it hits the groand or another piece
   const nextPositions = targetPiece.coordinatesDrag.map((coordinate) => {
-    if ((targetPiece.position.y + targetPiece.height) >= config.height) {
-      return 1
-    }
+    if ((targetPiece.position.y + targetPiece.height) >= config.height) return 1
     const nextPosition = gameboard[targetPiece.position.y + coordinate.y + 1][targetPiece.position.x + coordinate.x]
     return nextPosition
   })
