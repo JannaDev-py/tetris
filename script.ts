@@ -17,25 +17,44 @@ const config = {
   pieceHeight: canvas.height / 30
 }
 
-interface piece { width: number, height: number, color: string, x: number, y: number }
-
+// all pieces will start from left to right, top to bottom
 const pieces = [
-  { width: 1, height: 1, color: 'red', x: 0, y: 0 }
+  // [][][]
+  //   []
+  {
+    cordinates: [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+      { x: 1, y: 1 }
+    ],
+    position: {
+      x: 0,
+      y: 0
+    },
+    color: 'red',
+    rotate: 0
+  }
 ]
 
-const gameboard: Array<Array<Number | piece>> = Array.from({ length: config.height }, () => Array(config.width).fill(0))
+const gameboard: Array<Array<Number | typeof pieces[0]>> = Array.from({ length: config.height }, () => Array(config.width).fill(0))
 
 gameboard[0][0] = pieces[0]
+gameboard[pieces[0].cordinates[0].y][pieces[0].cordinates[0].x] = 1
+gameboard[pieces[0].cordinates[1].y][pieces[0].cordinates[1].x] = 1
+gameboard[pieces[0].cordinates[2].y][pieces[0].cordinates[2].x] = 1
+gameboard[pieces[0].cordinates[3].y][pieces[0].cordinates[3].x] = 1
 
 function renderGameboard (): void {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   gameboard.forEach((row, y) => {
     row.forEach((cell, x) => {
       if (cell !== 0) {
-        ctx.fillStyle = (cell as piece).color
+        ctx.fillStyle = (cell as typeof pieces[0]).color
         ctx.fillRect(x * config.pieceWidth, y * config.pieceHeight, config.pieceWidth, config.pieceHeight)
       }
     })
   })
 }
 
+renderGameboard()
