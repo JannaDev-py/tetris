@@ -21,7 +21,8 @@ const config = {
 }
 
 interface Piece {
-  cordinates: Array<{ x: number, y: number }>
+  coordinates: Array<{ x: number, y: number }>
+  coordinatesDrag: Array<{ x: number, y: number }>
   position: { x: number, y: number }
   color: string
   rotate: number
@@ -34,11 +35,16 @@ const pieces = [
   // [][][]
   //   []
   {
-    cordinates: [
+    coordinates: [
       { x: 0, y: 0 },
       { x: 1, y: 0 },
       { x: 2, y: 0 },
       { x: 1, y: 1 }
+    ],
+    coordinatesDrag: [
+      { x: 0, y: 0 },
+      { x: 1, y: 1 },
+      { x: 2, y: 0 }
     ],
     position: {
       x: 0,
@@ -51,11 +57,17 @@ const pieces = [
   },
   // [][][]
   {
-    cordinates: [
+    coordinates: [
       { x: 0, y: 0 },
       { x: 1, y: 0 },
       { x: 2, y: 0 }
     ],
+    coordinatesDrag: [
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 }
+    ],
+
     position: {
       x: 0,
       y: 0
@@ -68,11 +80,16 @@ const pieces = [
   //   [][]
   // [][]
   {
-    cordinates: [
+    coordinates: [
       { x: 1, y: 0 },
       { x: 2, y: 0 },
       { x: 0, y: 1 },
       { x: 1, y: 1 }
+    ],
+    coordinatesDrag: [
+      { x: 0, y: 1 },
+      { x: 1, y: 1 },
+      { x: 2, y: 0 }
     ],
     position: {
       x: 0,
@@ -101,7 +118,10 @@ function renderGameboard (): void {
   })
 }
 
-function generatePiece (): void {
+let targetPiece: Piece
+let isDragging = false
+
+function generatePiece (): Piece {
   const randomPiece = { ...pieces[Math.floor(Math.random() * pieces.length)] }
   let randomX = Math.floor(Math.random() * (config.width - randomPiece.width))
   randomPiece.color = '#' + Math.floor(Math.random() * 16777215).toString(16)
@@ -112,16 +132,42 @@ function generatePiece (): void {
 
   // lets put the piece at the positions it needs to be
   randomPiece.position.x = randomX
-  randomPiece.cordinates.forEach((cordinate) => {
+  randomPiece.coordinates.forEach((cordinate) => {
     gameboard[cordinate.y][cordinate.x + randomPiece.position.x] = randomPiece
   })
+
   renderGameboard()
+  return randomPiece
 }
 
 function initGame (): void {
-}
+  if (!isDragging) {
+    targetPiece = generatePiece()
+    isDragging = true
+  }
+  // now lets get the piece down until it hits the groand or another piece
+  const nextPositions = targetPiece.coordinatesDrag.map((coordinate) => {
+    const nextPosition = gameboard[targetPiece.position.y + coordinate.y + 1][targetPiece.position.x + coordinate.x]
+    return nextPosition
+  })
 
-generatePiece()
+  const isAvailableNextPosition = nextPositions.every((value) => value === nextPositions[0] && nextPositions[0] === 0)
+
+  if (isAvailableNextPosition) {
+    // first lets remove the current piece
+    targetPiece.coordinates.forEach((coordinate) => {
+      gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = 0
+    })
+
+    // then we recreate the piece below
+    targetPiece.position.y += 1
+    targetPiece.coordinates.forEach((coordinate) => {
+      gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = targetPiece
+    })
+
+    renderGameboard()
+  }
+}
 
 setInterval(() => {
   initGame()
