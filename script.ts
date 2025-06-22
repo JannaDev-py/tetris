@@ -208,6 +208,16 @@ const pieces: Piece[] = [
   }
 ]
 
+const tetrisColors = [
+  '#00FFFF', // I
+  '#FFFF00', // O
+  '#800080', // T
+  '#00FF00', // S
+  '#FF0000', // Z
+  '#0000FF', // J
+  '#FFA500' // L
+]
+
 const gameboard: Array<Array<Number | Piece>> = Array.from({ length: config.height }, () => Array(config.width).fill(0))
 
 function renderGameboard (): void {
@@ -228,7 +238,7 @@ let isDragging = false
 function generatePiece (): Piece {
   const randomPiece = JSON.parse(JSON.stringify(pieces[Math.floor(Math.random() * pieces.length)])) as Piece
   let randomX = Math.floor(Math.random() * (config.width - randomPiece.width[randomPiece.rotate]))
-  randomPiece.color = '#' + Math.floor(Math.random() * 16777215).toString(16)
+  randomPiece.color = tetrisColors[Math.floor(Math.random() * tetrisColors.length)]
 
   if (!(/^#[0-9a-f]{6}$/i).test(randomPiece.color)) {
     randomPiece.color = '#' + Math.floor(Math.random() * 16777215).toString(16)
