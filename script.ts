@@ -225,8 +225,10 @@ function renderGameboard (): void {
   gameboard.forEach((row, y) => {
     row.forEach((cell, x) => {
       if (cell !== 0) {
+        ctx.strokeStyle = '#000'
         ctx.fillStyle = (cell as Piece).color
         ctx.fillRect(x * config.pieceWidth, y * config.pieceHeight, config.pieceWidth, config.pieceHeight)
+        ctx.strokeRect(x * config.pieceWidth, y * config.pieceHeight, config.pieceWidth, config.pieceHeight)
       }
     })
   })
@@ -241,7 +243,7 @@ function generatePiece (): Piece {
   randomPiece.color = tetrisColors[Math.floor(Math.random() * tetrisColors.length)]
 
   if (!(/^#[0-9a-f]{6}$/i).test(randomPiece.color)) {
-    randomPiece.color = '#' + Math.floor(Math.random() * 16777215).toString(16)
+    randomPiece.color = tetrisColors[Math.floor(Math.random() * tetrisColors.length)]
   }
 
   while (gameboard[0][randomX] !== 0) {
