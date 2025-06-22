@@ -209,13 +209,13 @@ const pieces: Piece[] = [
 ]
 
 const tetrisColors = [
-  '#00FFFF', // I
-  '#FFFF00', // O
-  '#800080', // T
-  '#00FF00', // S
-  '#FF0000', // Z
-  '#0000FF', // J
-  '#FFA500' // L
+  '#00FFFF',
+  '#FFFF00',
+  '#800080',
+  '#00FF00',
+  '#FF0000',
+  '#0000FF',
+  '#FFA500'
 ]
 
 const gameboard: Array<Array<Number | Piece>> = Array.from({ length: config.height }, () => Array(config.width).fill(0))
@@ -297,7 +297,26 @@ function initGame (): void {
   isDragging = false
 }
 
+document.addEventListener('keydown', (event) => {
+  // first lets delete the whole piece
+  targetPiece.coordinates[targetPiece.rotate].forEach((coordinate) => {
+    gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = 0
+  })
+
+  // then we can rotate the piece
+  if (event.key === 'ArrowLeft') {
+    targetPiece.rotate -= 1
+    if (targetPiece.rotate < 0) {
+      targetPiece.rotate = 3
+    }
+  } else if (event.key === 'ArrowRight') {
+    targetPiece.rotate += 1
+    if (targetPiece.rotate > 3) {
+      targetPiece.rotate = 0
+    }
+  }
+})
 setInterval(() => {
   initGame()
   renderGameboard()
-}, 25)
+}, 100)
