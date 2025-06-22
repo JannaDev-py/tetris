@@ -21,30 +21,66 @@ const config = {
 }
 
 interface Piece {
-  coordinates: Array<{ x: number, y: number }>
-  coordinatesDrag: Array<{ x: number, y: number }>
+  coordinates: Array<Array<{ x: number, y: number }>>
+  coordinatesDrag: Array<Array<{ x: number, y: number }>>
   position: { x: number, y: number }
   color: string
   rotate: number
-  width: number
-  height: number
+  width: number[]
+  height: number[]
 }
 
 // all pieces will start from left to right, top to bottom
 const pieces: Piece[] = [
-  // [][][]
-  //   []
+  // [][][]    []     []    []
+  //   []    [][]   [][][]  [][]
+  //           []           []
   {
     coordinates: [
-      { x: 0, y: 0 },
-      { x: 1, y: 0 },
-      { x: 2, y: 0 },
-      { x: 1, y: 1 }
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+        { x: 1, y: 1 }
+      ],
+      [
+        { x: 1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 1, y: 2 }
+      ],
+      [
+        { x: 1, y: 0 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 2, y: 1 }
+      ],
+      [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 },
+        { x: 1, y: 1 }
+      ]
     ],
     coordinatesDrag: [
-      { x: 0, y: 0 },
-      { x: 1, y: 1 },
-      { x: 2, y: 0 }
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 1 },
+        { x: 2, y: 0 }
+      ],
+      [
+        { x: 0, y: 1 },
+        { x: 1, y: 2 }
+      ],
+      [
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 2, y: 1 }
+      ],
+      [
+        { x: 0, y: 2 },
+        { x: 1, y: 1 }
+      ]
     ],
     position: {
       x: 0,
@@ -52,53 +88,123 @@ const pieces: Piece[] = [
     },
     color: '#3f7',
     rotate: 0,
-    width: 3,
-    height: 2
+    width: [3, 2, 3, 2],
+    height: [2, 3, 2, 3]
   },
-  // [][][]
+  // [][][] [] [][][] []
+  //        []        []
+  //        []        []
   {
     coordinates: [
-      { x: 0, y: 0 },
-      { x: 1, y: 0 },
-      { x: 2, y: 0 }
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 }
+      ],
+      [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 }
+      ],
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 }
+      ],
+      [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 }
+      ]
     ],
     coordinatesDrag: [
-      { x: 0, y: 0 },
-      { x: 1, y: 0 },
-      { x: 2, y: 0 }
-    ],
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 }
+      ],
+      [
+        { x: 0, y: 2 }
+      ],
+      [
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 }
+      ],
+      [
+        { x: 0, y: 2 }
+      ]
 
+    ],
     position: {
       x: 0,
       y: 0
     },
     color: '#f21',
     rotate: 0,
-    width: 3,
-    height: 1
+    width: [3, 1, 3, 1],
+    height: [1, 3, 1, 3]
   },
-  //   [][]
-  // [][]
+  //   [][]  []      [][]  []
+  // [][]    [][]  [][]    [][]
+  //           []            []
   {
     coordinates: [
-      { x: 1, y: 0 },
-      { x: 2, y: 0 },
-      { x: 0, y: 1 },
-      { x: 1, y: 1 }
+      [
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 }
+      ],
+      [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 1, y: 2 }
+      ],
+      [
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 }
+      ],
+      [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 1, y: 2 }
+      ]
+
     ],
     coordinatesDrag: [
-      { x: 0, y: 1 },
-      { x: 1, y: 1 },
-      { x: 2, y: 0 }
+      [
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 2, y: 0 }
+      ],
+      [
+        { x: 0, y: 1 },
+        { x: 1, y: 2 }
+      ],
+      [
+        { x: 0, y: 1 },
+        { x: 1, y: 1 },
+        { x: 2, y: 0 }
+      ],
+      [
+        { x: 0, y: 1 },
+        { x: 1, y: 2 }
+      ]
+
     ],
     position: {
       x: 0,
       y: 0
     },
     color: '#f21',
-    rotate: 0,
-    width: 3,
-    height: 2
+    rotate: 3,
+    width: [3, 2, 3, 2],
+    height: [2, 3, 2, 3]
   }
 ]
 
@@ -121,7 +227,7 @@ let isDragging = false
 
 function generatePiece (): Piece {
   const randomPiece = JSON.parse(JSON.stringify(pieces[Math.floor(Math.random() * pieces.length)])) as Piece
-  let randomX = Math.floor(Math.random() * (config.width - randomPiece.width))
+  let randomX = Math.floor(Math.random() * (config.width - randomPiece.width[randomPiece.rotate]))
   randomPiece.color = '#' + Math.floor(Math.random() * 16777215).toString(16)
 
   if (!(/^#[0-9a-f]{6}$/i).test(randomPiece.color)) {
@@ -129,12 +235,12 @@ function generatePiece (): Piece {
   }
 
   while (gameboard[0][randomX] !== 0) {
-    randomX = Math.floor(Math.random() * (config.width - randomPiece.width))
+    randomX = Math.floor(Math.random() * (config.width - randomPiece.width[randomPiece.rotate]))
   }
 
   // lets put the piece at the positions it needs to be
   randomPiece.position.x = randomX
-  randomPiece.coordinates.forEach((cordinate) => {
+  randomPiece.coordinates[randomPiece.rotate].forEach((cordinate) => {
     gameboard[cordinate.y][cordinate.x + randomPiece.position.x] = randomPiece
   })
 
@@ -147,8 +253,9 @@ function initGame (): void {
     isDragging = true
   }
   // now lets get the piece down until it hits the groand or another piece
-  const nextPositions = targetPiece.coordinatesDrag.map((coordinate) => {
-    if ((targetPiece.position.y + targetPiece.height) >= config.height) return 1
+  const nextPositions = targetPiece.coordinatesDrag[targetPiece.rotate].map((coordinate) => {
+    if ((targetPiece.position.y + targetPiece.height[targetPiece.rotate]) >= config.height ||
+    gameboard[targetPiece.position.y + coordinate.y + 1] === undefined) return 1
     const nextPosition = gameboard[targetPiece.position.y + coordinate.y + 1][targetPiece.position.x + coordinate.x]
     return nextPosition
   })
@@ -157,7 +264,7 @@ function initGame (): void {
 
   if (isAvailableNextPosition) {
     // first lets remove the current piece
-    targetPiece.coordinates.forEach((coordinate) => {
+    targetPiece.coordinates[targetPiece.rotate].forEach((coordinate) => {
       gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = 0
     })
 
@@ -168,7 +275,7 @@ function initGame (): void {
     }
 
     targetPiece.position.y += 1
-    targetPiece.coordinates.forEach((coordinate) => {
+    targetPiece.coordinates[targetPiece.rotate].forEach((coordinate) => {
       gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = targetPiece
     })
     return
