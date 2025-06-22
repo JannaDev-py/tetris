@@ -235,7 +235,6 @@ function renderGameboard (): void {
 }
 
 let targetPiece: Piece
-let isDragging = false
 
 function generatePiece (): Piece {
   const randomPiece = JSON.parse(JSON.stringify(pieces[Math.floor(Math.random() * pieces.length)])) as Piece
@@ -260,10 +259,6 @@ function generatePiece (): Piece {
 }
 
 function initGame (): void {
-  if (!isDragging) {
-    targetPiece = generatePiece()
-    isDragging = true
-  }
   // now lets get the piece down until it hits the groand or another piece
   const nextPositions = targetPiece.coordinatesDrag[targetPiece.rotate].map((coordinate) => {
     if ((targetPiece.position.y + targetPiece.height[targetPiece.rotate]) >= config.height ||
@@ -282,7 +277,6 @@ function initGame (): void {
 
     // then we recreate the piece below
     if (targetPiece.position.y + 1 >= config.height) {
-      isDragging = false
       return
     }
 
@@ -292,30 +286,53 @@ function initGame (): void {
     })
     return
   } else if (!isAvailableNextPosition && targetPiece.position.y === 0) {
+    document.removeEventListener('keydown', rotatePiece)
     window.location.reload()
   }
-  isDragging = false
+  targetPiece = generatePiece()
 }
 
+targetPiece = generatePiece()
+
 document.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') rotatePiece(event)
+})
+
+function rotatePiece (event: KeyboardEvent): void {
   // first lets delete the whole piece
   targetPiece.coordinates[targetPiece.rotate].forEach((coordinate) => {
     gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = 0
   })
 
-  // then we can rotate the piece
-  if (event.key === 'ArrowLeft') {
-    targetPiece.rotate -= 1
-    if (targetPiece.rotate < 0) {
-      targetPiece.rotate = 3
-    }
-  } else if (event.key === 'ArrowRight') {
-    targetPiece.rotate += 1
-    if (targetPiece.rotate > 3) {
-      targetPiece.rotate = 0
-    }
+  let rotate = targetPiece.rotate
+  const initialRotate = targetPiece.rotate
+
+  if ((targetPiece.position.y + 1 + targetPiece.height[targetPiece.rotate]) >= config.height) {
+    targetPiece = generatePiece()
+    return
   }
-})
+
+  // then we can rotate the piece
+  if (event.key === 'ArrowLeft') rotate = (rotate - 1 < 0) ? 3 : rotate - 1
+  else if (event.key === 'ArrowRight') rotate = (rotate + 1 > 3) ? 0 : rotate + 1
+
+  // then lets check if the piece its actually can be rotated
+  const nextPositions = targetPiece.coordinatesDrag[rotate].map((coordinate) => {
+    if ((targetPiece.position.y + targetPiece.height[rotate]) >= config.height ||
+    gameboard[targetPiece.position.y + coordinate.y + 1] === undefined) return 1
+    const nextPosition = gameboard[targetPiece.position.y + coordinate.y + 1][targetPiece.position.x + coordinate.x]
+    return nextPosition
+  })
+
+  const isAvailableNextPosition = nextPositions.every((value) => value === nextPositions[0] && nextPositions[0] === 0)
+
+  if (!isAvailableNextPosition) {
+    rotate = initialRotate
+  }
+
+  targetPiece.rotate = rotate
+}
+
 setInterval(() => {
   initGame()
   renderGameboard()
