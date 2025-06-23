@@ -296,6 +296,7 @@ targetPiece = generatePiece()
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') rotatePiece(event)
+  if (event.key === 'a' || event.key === 'd') movePiece(event)
 })
 
 function rotatePiece (event: KeyboardEvent): void {
@@ -331,6 +332,30 @@ function rotatePiece (event: KeyboardEvent): void {
   }
 
   targetPiece.rotate = rotate
+}
+
+function movePiece (event: KeyboardEvent): void {
+  // first lets delete the whole piece
+  targetPiece.coordinates[targetPiece.rotate].forEach((coordinate) => {
+    gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = 0
+  })
+
+  // then we can move the piece
+  if (event.key === 'a' &&
+    targetPiece.position.x - 1 >= 0 &&
+    gameboard[targetPiece.position.y][targetPiece.position.x - 1] === 0
+  ) {
+    targetPiece.position.x -= 1
+  } else if (event.key === 'd' &&
+    targetPiece.position.x + targetPiece.width[targetPiece.rotate] < config.width &&
+    gameboard[targetPiece.position.y][targetPiece.position.x + targetPiece.width[targetPiece.rotate]] === 0
+  ) {
+    targetPiece.position.x += 1
+  }
+
+  targetPiece.coordinates[targetPiece.rotate].forEach((coordinate) => {
+    gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = targetPiece
+  })
 }
 
 setInterval(() => {
