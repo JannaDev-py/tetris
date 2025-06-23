@@ -259,6 +259,15 @@ function generatePiece (): Piece {
 }
 
 function initGame (): void {
+  // first lets validate if there is no a full row
+  gameboard.forEach((row, y) => {
+    const isFull = gameboard[y].every((cell) => cell !== 0)
+    if (isFull && !gameboard[y].includes(targetPiece)) {
+      gameboard.splice(y, 1)
+      gameboard.unshift(Array(config.width).fill(0))
+    }
+  })
+
   // now lets get the piece down until it hits the groand or another piece
   const nextPositions = targetPiece.coordinatesDrag[targetPiece.rotate].map((coordinate) => {
     if ((targetPiece.position.y + targetPiece.height[targetPiece.rotate]) >= config.height ||
@@ -284,15 +293,13 @@ function initGame (): void {
     targetPiece.coordinates[targetPiece.rotate].forEach((coordinate) => {
       gameboard[targetPiece.position.y + coordinate.y][targetPiece.position.x + coordinate.x] = targetPiece
     })
-    return
   } else if (!isAvailableNextPosition && targetPiece.position.y === 0) {
-    document.removeEventListener('keydown', rotatePiece)
-    window.location.reload()
+    // window.location.reload()
+  } else {
+    targetPiece = generatePiece()
   }
-  targetPiece = generatePiece()
+  targetPiece = JSON.parse(JSON.stringify(targetPiece))
 }
-
-targetPiece = generatePiece()
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') rotatePiece(event)
@@ -309,7 +316,6 @@ function rotatePiece (event: KeyboardEvent): void {
   const initialRotate = targetPiece.rotate
 
   if ((targetPiece.position.y + 1 + targetPiece.height[targetPiece.rotate]) >= config.height) {
-    targetPiece = generatePiece()
     return
   }
 
@@ -358,7 +364,9 @@ function movePiece (event: KeyboardEvent): void {
   })
 }
 
+targetPiece = generatePiece()
+
 setInterval(() => {
   initGame()
   renderGameboard()
-}, 100)
+}, 150)
